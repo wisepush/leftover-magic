@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Results — Leftover Magic</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a href="/" class="logo">Leftover <span>Magic</span></a>
+    <div class="searchbar small">
+      <input id="ing" placeholder="List your leftover ingredients" />
+      <button id="go">Search</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2 class="muted" id="queryLabel"></h2>
+
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="foot">© 2025 Leftover Magic</footer>
+
+  <script src="/app.js"></script>
+  <script>
+    const p = new URLSearchParams(location.search);
+    const ings = p.get('ings') || '';
+    document.getElementById('queryLabel').textContent = ings ? 'Results for: ' + ings : '';
+
+    fetch('/api/suggest', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ingredients: ings.split(',').map(s=>s.trim()).filter(Boolean)})})
+      .then(r=>r.json()).then(data => {
+        window.renderResults(data.recipes || []);
+      });
+
+    document.getElementById('go').onclick = () => {
+      const v = document.getElementById('ing').value.trim();
+      const q = encodeURIComponent(v);
+      location.href = '/results.html?ings=' + q;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recipe — Leftover Magic</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <a href="/" class="logo">Leftover <span>Magic</span></a>
+  </header>
+
+  <main class="container narrow">
+    <article id="recipe"></article>
+  </main>
+
+  <footer class="foot">© 2025 Leftover Magic</footer>
+
+  <script>
+    const rid = new URLSearchParams(location.search).get('id');
+    fetch('/api/recipe/' + encodeURIComponent(rid))
+      .then(r=>r.json()).then(data => {
+        if (data.error) { document.getElementById('recipe').textContent = 'Recipe not found.'; return; }
+        const el = document.getElementById('recipe');
+        el.innerHTML = `
+          <h1>${data.title}</h1>
+          <section class="card">
+            <h3>Ingredients</h3>
+            <ul>${(data.ingredients||[]).map(i => '<li>'+i+'</li>').join('')}</ul>
+          </section>
+          <section class="card">
+            <h3>Steps</h3>
+            <ol>${(data.steps||[]).map(s => '<li>'+s+'</li>').join('')}</ol>
+          </section>
+          <section class="card">
+            <h3>Nutrition (est.)</h3>
+            <p>${data.nutrition.kcal} kcal • Protein ${data.nutrition.protein_g}g • Carbs ${data.nutrition.carbs_g}g • Fat ${data.nutrition.fat_g}g</p>
+          </section>`;
+      });
+  </script>
+</body>
+</html>
