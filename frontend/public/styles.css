@@ -1,149 +1,68 @@
-/* ------------------------------
-   Base / theme
----------------------------------*/
-:root{
-  --ink:#111;
-  --muted:#6a6a6a;
-  --line:#e6e6e6;
-  --bg:#fff;
-  --radius:12px;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  color:var(--ink);
-  background:var(--bg);
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
 }
 
-/* ------------------------------
-   Header / Footer / Layout
----------------------------------*/
-.nav{
-  display:flex; align-items:center;
-  padding:18px 24px;
-  border-bottom:1px solid var(--line);
-}
-.nav h1, .logo{
-  margin:0; font-weight:800; letter-spacing:.2px;
-}
-.nav span{font-weight:800}
-
-.container{
-  max-width:1100px;
-  margin:0 auto;
-  padding:0 16px;
+/* Hero Section */
+.hero.hero-img {
+  position: relative;
+  min-height: 68vh;
+  background-image: url('/banner-desktop.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
 }
 
-.foot{
-  padding:24px;
-  border-top:1px solid var(--line);
-  text-align:center;
-  color:var(--muted);
+.hero.hero-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35); /* keeps text/searchbar readable */
 }
 
-/* ------------------------------
-   Full-bleed Hero
-   (edge-to-edge section outside .container)
----------------------------------*/
-.hero.hero-img{
-  position:relative;
-  min-height:68vh;                     /* nice tall banner */
-  background-size:cover;
-  background-position:center;
-  display:flex; justify-content:center; align-items:center; text-align:center;
-
-  /* full-bleed trick */
-  width:100vw;
-  margin-left:50%;
-  transform:translateX(-50%);
+.hero-inner {
+  position: relative;
+  z-index: 1;
 }
 
-.hero.hero-img::before{
-  content:"";
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.45);          /* darken banner for readability */
+.searchbar {
+  display: flex;
+  gap: 10px;
 }
 
-.hero-inner{
-  position:relative; z-index:1;
-  color:#fff;
-  padding:24px;
+.searchbar input {
+  padding: 10px;
+  font-size: 1rem;
 }
 
-.tagline{
-  margin:0 0 16px;
-  font-size:clamp(2rem,5vw,3.6rem);
-  font-weight:800;
-  letter-spacing:.5px;
+.searchbar button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-/* ------------------------------
-   Search bar
----------------------------------*/
-.searchbar{
-  display:flex; gap:10px; justify-content:center; align-items:center;
+/* Mobile: swap banner image */
+@media (max-width: 768px) {
+  .hero.hero-img {
+    background-image: url('/banner-mobile.png');
+    background-position: center center;
+  }
+
+  .searchbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .searchbar input,
+  .searchbar button {
+    width: 90%;
+    max-width: 300px;
+  }
 }
-
-.searchbar input{
-  min-width:420px; max-width:60vw;
-  padding:14px 16px;
-  border:0; border-radius:8px;
-  background:#fff; color:#111;
-  outline:none;
-}
-
-.searchbar button{
-  padding:14px 18px;
-  border:0; border-radius:8px;
-  background:#111; color:#fff;
-  cursor:pointer;
-  transition:transform .08s ease, box-shadow .12s ease, opacity .12s ease;
-}
-.searchbar button:hover{ transform:translateY(-1px); box-shadow:0 8px 22px rgba(0,0,0,.14) }
-.searchbar button:active{ transform:translateY(0); box-shadow:none; opacity:.9 }
-
-/* Small screens: stack input and button */
-@media (max-width:640px){
-  .searchbar{ flex-direction:column; gap:12px }
-  .searchbar input{ min-width:0; width:86vw }
-  .searchbar button{ width:max-content }
-}
-
-/* ------------------------------
-   Cards / grid (used on results page)
----------------------------------*/
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;
-  margin:28px 0;
-}
-.card{
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  background:#fff;
-  padding:16px;
-  box-shadow:0 4px 18px rgba(0,0,0,.05);
-}
-.card.link{ text-decoration:none; color:inherit; display:block; transition:transform .08s ease, box-shadow .12s ease }
-.card.link:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.12) }
-.card-title{ font-weight:700; margin:0 0 6px }
-.card-sub{ color:var(--muted); margin:0 0 8px }
-.card-missing{ font-size:.92rem }
-
-/* ------------------------------
-   Typography tweaks
----------------------------------*/
-h1{ font-size:2rem; margin:18px 0 }
-h2{ font-size:1.4rem; margin:16px 0 }
-h3{ margin:12px 0 }
-.muted{ color:var(--muted) }
-
-ul,ol{ margin:8px 0 0 20px }
-
-/* ------------------------------
-   Utility
----------------------------------*/
-.logo{ text-decoration:none; color:inherit }
