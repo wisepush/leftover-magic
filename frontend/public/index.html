@@ -1,9 +1,39 @@
-<section class="hero hero-img" style="background-image: url('/banner.png')">
-  <div class="hero-inner">
-    <h1 class="tagline">LEFTOVERS, REINVENTED</h1>
-    <div class="searchbar">
-      <input id="ing" placeholder="List your leftover ingredients" />
-      <button id="go">Find Recipes</button>
-    </div>
-  </div>
-</section>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leftover Magic</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <h1>Leftover <span>Magic</span></h1>
+  </header>
+
+  <main class="container">
+    <section class="hero hero-img" style="background-image:url('/banner.png')">
+      <div class="hero-inner">
+        <h1 class="tagline">LEFTOVERS, REINVENTED</h1>
+        <div class="searchbar">
+          <input id="ing" placeholder="List your leftover ingredients" />
+          <button id="go">Find Recipes</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">© 2025 Leftover Magic</footer>
+
+  <script>
+    const input = document.getElementById('ing');
+    function go() {
+      const v = input.value.trim();
+      const q = encodeURIComponent(v);
+      window.location.href = '/results.html?ings=' + q;
+    }
+    document.getElementById('go').onclick = go;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  </script>
+</body>
+</html>
