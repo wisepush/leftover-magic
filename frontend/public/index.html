@@ -4,17 +4,82 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Leftover Magic</title>
-  <!-- cache-bust so your browser pulls the latest CSS -->
-  <link rel="stylesheet" href="/styles.css?v=7" />
+
+  <style>
+    :root { --btn: #ff7f50; }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Banner container */
+    .hero {
+      width: 100%;
+      height: 72vh;
+      background-image: url('/banner-desktop.png');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    /* Search area */
+    .hero-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-inner input {
+      padding: 14px 16px;
+      border: none;
+      border-radius: 8px;
+      min-width: 300px;
+      font-size: 16px;
+    }
+
+    .hero-inner button {
+      padding: 14px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--btn);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .hero {
+        height: 90vh;
+        background-image: url('/banner-mobile.png');
+      }
+      .hero-inner {
+        top: auto;
+        bottom: 12vh; /* moves it down */
+        transform: translateX(-50%);
+        flex-direction: column;
+        gap: 12px;
+      }
+      .hero-inner input {
+        width: 80vw;
+        min-width: unset;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- HERO (no extra text—it's baked into your banner) -->
-  <section class="hero hero-img">
+
+  <section class="hero">
     <div class="hero-inner">
-      <div class="searchbar">
-        <input id="ing" placeholder="List your leftover ingredients" />
-        <button id="go">Find Recipes</button>
-      </div>
+      <input id="ing" placeholder="List your leftover ingredients" />
+      <button id="go">Find Recipes</button>
     </div>
   </section>
 
@@ -27,5 +92,6 @@
     document.getElementById('go').onclick = go;
     input.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   </script>
+
 </body>
 </html>
