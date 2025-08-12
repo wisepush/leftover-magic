@@ -1,68 +1,71 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
+/* Base */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
 
-/* Hero Section */
-.hero.hero-img {
+/* Full-bleed hero
+   - Default (desktop) uses banner-desktop.png
+   - Mobile swaps to banner-mobile.png
+*/
+.hero.hero-img{
   position: relative;
   min-height: 68vh;
-  background-image: url('/banner-desktop.png');
+
+  /* If image fails to load you’ll at least see a dark bg */
+  background-color: #222;
+
+  /* Desktop banner (cache-busted) */
+  background-image: url('/banner-desktop.png?v=4');
   background-size: cover;
-  background-position: center;
+  background-position: center 35%;
   background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+
+  /* full-bleed trick */
   width: 100vw;
   margin-left: 50%;
   transform: translateX(-50%);
+
+  display: flex; justify-content: center; align-items: center; text-align: center;
 }
 
-.hero.hero-img::before {
+/* Overlay so the input stays readable on any photo */
+.hero.hero-img::before{
   content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35); /* keeps text/searchbar readable */
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.35);
 }
 
-.hero-inner {
-  position: relative;
-  z-index: 1;
+/* Mobile: swap the image */
+@media (max-width: 768px){
+  .hero.hero-img{
+    background-image: url('/banner-mobile.png?v=4');
+    background-position: center center;
+    min-height: 64vh;
+  }
 }
 
-.searchbar {
-  display: flex;
-  gap: 10px;
+.hero-inner{
+  position: relative; z-index: 1;
+  padding: 24px;
 }
 
-.searchbar input {
-  padding: 10px;
-  font-size: 1rem;
+/* Search bar */
+.searchbar{ display: flex; gap: 10px; justify-content: center; align-items: center; }
+.searchbar input{
+  min-width: 420px; max-width: 60vw;
+  padding: 14px 16px;
+  border: 0; border-radius: 8px;
+  background: #fff; color: #111;
 }
-
-.searchbar button {
-  padding: 10px 15px;
-  font-size: 1rem;
+.searchbar button{
+  padding: 14px 18px;
+  border: 0; border-radius: 8px;
+  background: #111; color: #fff;
   cursor: pointer;
 }
 
-/* Mobile: swap banner image */
-@media (max-width: 768px) {
-  .hero.hero-img {
-    background-image: url('/banner-mobile.png');
-    background-position: center center;
-  }
-
-  .searchbar {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .searchbar input,
-  .searchbar button {
-    width: 90%;
-    max-width: 300px;
-  }
+/* Stack on small screens */
+@media (max-width: 640px){
+  .searchbar{ flex-direction: column; gap: 12px; }
+  .searchbar input{ min-width: 0; width: 86vw; }
+  .searchbar button{ width: max-content; }
 }
