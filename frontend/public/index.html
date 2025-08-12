@@ -1,21 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Leftover Magic</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <!-- Site Header -->
-  <header class="nav">
-    <h1>Leftover <span>Magic</span></h1>
-  </header>
-
-  <!-- Full-Bleed Hero -->
-  <section class="hero hero-img" style="background-image:url('/banner.png')">
+  <!-- Removed the header/site title -->
+  
+  <section class="hero hero-img">
     <div class="hero-inner">
-      <h1 class="tagline">LEFTOVERS, REINVENTED</h1>
+      <!-- Removed the tagline -->
       <div class="searchbar">
         <input id="ing" placeholder="List your leftover ingredients" />
         <button id="go">Find Recipes</button>
@@ -23,22 +19,6 @@
     </div>
   </section>
 
-  <!-- Main Content Area (empty for now, add more if needed) -->
-  <main class="container">
-    <!-- Future content goes here -->
-  </main>
-
-  <!-- Footer -->
-  <footer class="foot">© 2025 Leftover Magic</footer>
-
-  <!-- Search Script -->
-  <script>
-    document.getElementById('go').onclick = () => {
-      const v = document.getElementById('ing').value.trim();
-      const q = encodeURIComponent(v);
-      window.location.href = '/results.html?ings=' + q;
-    };
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
-
