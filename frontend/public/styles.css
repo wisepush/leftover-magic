@@ -1,21 +1,101 @@
-/* MOBILE BANNER + Search bar positioning */
-@media (max-width: 768px) {
-  .hero {
-    background-image: url('banner-mobile.png');
-    align-items: flex-start; /* Start from top */
-    filter: brightness(1.15) contrast(1.05); /* Lighten and give a small contrast boost */
-  }
-  .searchbar {
-    margin-top: 75vh; /* Push further down - around 3/4 of banner */
-    width: 90%;
-    max-width: 400px;
-  }
+/* ===== Reset / Base ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #111;
 }
 
-/* DESKTOP BANNER */
-@media (min-width: 769px) {
-  .hero {
-    background-image: url('banner-desktop.png');
-    filter: brightness(1.1) contrast(1.05); /* Lighten/contrast desktop too */
+/* ===== HERO ===== */
+.hero.hero-img{
+  position: relative;                 /* anchor for the absolute search block */
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  min-height: 72vh;
+
+  background-image: url('/banner-desktop.png?v=7');
+  background-size: cover;
+  background-position: center 35%;
+  background-repeat: no-repeat;
+
+  /* small pop without darkening your logo/text in the image */
+  filter: brightness(1.08) contrast(1.04);
+}
+
+/* Nuke any old flex rules that might be lingering */
+.hero, .hero.hero-img { display: block !important; align-items: initial !important; justify-content: initial !important; }
+
+/* Absolutely position the search block so it's reliable on all devices */
+.hero-inner{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);   /* center (desktop) */
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+/* ===== Search UI ===== */
+.searchbar{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchbar input{
+  min-width: 420px;
+  max-width: 60vw;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.searchbar button{
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #ff7f50;              /* coral for zip */
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.searchbar button:hover{ background:#e76e3c; }
+
+/* ===== Mobile (<=768px) ===== */
+@media (max-width: 768px){
+  .hero.hero-img{
+    background-image: url('/banner-mobile.png?v=7');
+    background-position: center center;
+    min-height: 90vh;                  /* taller banner on phones */
+    filter: brightness(1.12) contrast(1.05);
   }
+
+  /* Put the search near the bottom, centered */
+  .hero-inner{
+    top: auto;                         /* stop vertical centering */
+    bottom: 12vh;                      /* ~2/3–3/4 down the banner */
+    transform: translateX(-50%);       /* center horizontally only */
+    padding: 0 12px;
+  }
+
+  .searchbar{ flex-direction: column; gap: 12px; }
+  .searchbar input{ min-width: 0; width: 86vw; }
+  .searchbar button{ width: max-content; }
+}
+
+/* Extra-small devices */
+@media (max-width: 360px){
+  .hero-inner{ bottom: 10vh; }
 }
