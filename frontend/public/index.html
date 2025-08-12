@@ -1,17 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Leftover Magic</title>
-  <link rel="stylesheet" href="styles.css"/>
+
+  <!-- cache-bust the CSS so you see the latest -->
+  <link rel="stylesheet" href="/styles.css?v=4" />
 </head>
 <body>
-  <!-- Removed the header/site title -->
-  
+  <!-- No header or tagline per your request -->
+
+  <!-- Full-bleed hero with search -->
   <section class="hero hero-img">
     <div class="hero-inner">
-      <!-- Removed the tagline -->
       <div class="searchbar">
         <input id="ing" placeholder="List your leftover ingredients" />
         <button id="go">Find Recipes</button>
@@ -19,6 +21,15 @@
     </div>
   </section>
 
-  <script src="script.js"></script>
+  <script>
+    const input = document.getElementById('ing');
+    function go() {
+      const v = input.value.trim();
+      const q = encodeURIComponent(v);
+      window.location.href = '/results.html?ings=' + q;
+    }
+    document.getElementById('go').onclick = go;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  </script>
 </body>
 </html>
