@@ -4,14 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Leftover Magic</title>
-
-  <!-- cache-bust the CSS so you see the latest -->
-  <link rel="stylesheet" href="/styles.css?v=4" />
+  <link rel="stylesheet" href="/styles.css?v=6" />
 </head>
 <body>
-  <!-- No header or tagline per your request -->
 
-  <!-- Full-bleed hero with search -->
+  <!-- Full-bleed hero. No extra title/text—it's baked into the image -->
   <section class="hero hero-img">
     <div class="hero-inner">
       <div class="searchbar">
@@ -23,11 +20,11 @@
 
   <script>
     const input = document.getElementById('ing');
-    function go() {
+    const go = () => {
       const v = input.value.trim();
       const q = encodeURIComponent(v);
       window.location.href = '/results.html?ings=' + q;
-    }
+    };
     document.getElementById('go').onclick = go;
     input.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   </script>
