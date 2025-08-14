@@ -3,42 +3,92 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Results — Leftover Magic</title>
+  <title>Results • Leftover Magic</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body>
-  <header class="nav">
-    <a href="/" class="logo">Leftover <span>Magic</span></a>
-    <div class="searchbar small">
-      <input id="ing" placeholder="List your leftover ingredients" />
-      <button id="go">Search</button>
+<body class="results-page">
+  <main class="results-hero">
+    <div class="results-overlay"></div>
+
+    <div class="results-header">
+      <div class="results-search">
+        <input id="ing" placeholder="List your leftover ingredients" />
+        <button id="go">Find Recipes</button>
+      </div>
+      <p class="query-pill" id="queryPill"></p>
     </div>
-  </header>
-
-  <main class="container">
-    <h2 class="muted" id="queryLabel"></h2>
-
-    <div id="grid" class="grid"></div>
   </main>
+
+  <section class="results-wrap" id="resultsWrap" aria-live="polite">
+    <!-- Recipe cards injected here -->
+  </section>
 
   <footer class="foot">© 2025 Leftover Magic</footer>
 
   <script src="/app.js"></script>
   <script>
-    const p = new URLSearchParams(location.search);
-    const ings = p.get('ings') || '';
-    document.getElementById('queryLabel').textContent = ings ? 'Results for: ' + ings : '';
+    // results page boot
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const ings = params.get('ings') || '';
+      const pill = document.getElementById('queryPill');
+      pill.textContent = ings ? `You have: ${ings}` : 'Try adding a few ingredients';
 
-    fetch('/api/suggest', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ingredients: ings.split(',').map(s=>s.trim()).filter(Boolean)})})
-      .then(r=>r.json()).then(data => {
-        window.renderResults(data.recipes || []);
-      });
+      // re-search from results page
+      document.getElementById('go').onclick = () => {
+        const v = document.getElementById('ing').value.trim();
+        const q = encodeURIComponent(v);
+        location.href = '/results.html?ings=' + q;
+      };
+      document.getElementById('ing').value = ings;
 
-    document.getElementById('go').onclick = () => {
-      const v = document.getElementById('ing').value.trim();
-      const q = encodeURIComponent(v);
-      location.href = '/results.html?ings=' + q;
-    };
+      // fetch suggestions
+      fetch(`/api/recipes?ings=${encodeURIComponent(ings)}`)
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(showResults)
+        .catch(() => showResults(dummyResults(ings)));
+
+      function showResults(list) {
+        const wrap = document.getElementById('resultsWrap');
+        wrap.innerHTML = '';
+        if (!list || !list.length) {
+          wrap.innerHTML = `<div class="empty">No matches yet. Try adding a staple like eggs, rice, or pasta.</div>`;
+          return;
+        }
+        list.forEach(r => {
+          const card = document.createElement('article');
+          card.className = 'recipe-card';
+          card.innerHTML = `
+            <div class="recipe-badge">${r.time || '25 min'}</div>
+            <h3>${r.title}</h3>
+            <p class="recipe-blurb">${r.blurb || 'Quick, flexible, and pantry-friendly.'}</p>
+            <p class="recipe-missing"><strong>Missing:</strong> ${r.missing?.join(', ') || 'Nothing!'}</p>
+            <button class="ghost" data-id="${r.id}">View recipe</button>
+          `;
+          wrap.appendChild(card);
+        });
+
+        // click → detail page (stub route)
+        wrap.addEventListener('click', e => {
+          if (e.target.matches('button.ghost')) {
+            const id = e.target.getAttribute('data-id');
+            location.href = `/recipe.html?id=${encodeURIComponent(id)}&ings=${encodeURIComponent(ings)}`;
+          }
+        }, { once: true });
+      }
+
+      // fallback data if the API isn’t wired yet
+      function dummyResults(ings) {
+        const have = (ings || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        const pickMissing = arr => arr.filter(x => !have.includes(x)).slice(0, 2);
+        return [
+          { id:'pasta-salad', title:'Pasta Salad', blurb:'Tossed with herbs & veg.', missing: pickMissing(['olive oil','feta','cucumber']), time:'20 min' },
+          { id:'chicken-pesto', title:'Chicken Pesto', blurb:'One-pan weeknight hero.', missing: pickMissing(['pesto','parmesan']), time:'30 min' },
+          { id:'veg-roast-bowl', title:'Roast Veg Bowl', blurb:'Sheet-pan + grains.', missing: pickMissing(['quinoa','tahini']), time:'35 min' },
+          { id:'bbq-flatbread', title:'BBQ Flatbread', blurb:'Crispy, saucy, shareable.', missing: pickMissing(['bbq sauce','mozzarella']), time:'15 min' }
+        ];
+      }
+    })();
   </script>
 </body>
 </html>
