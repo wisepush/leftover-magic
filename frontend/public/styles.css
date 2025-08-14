@@ -1,101 +1,135 @@
-/* ===== Reset / Base ===== */
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  color: #111;
+/* ---------- Results page ---------- */
+
+.results-page {
+  background: #111;
+  color: #fff;
 }
 
-/* ===== HERO ===== */
-.hero.hero-img{
-  position: relative;                 /* anchor for the absolute search block */
-  width: 100vw;
-  margin-left: 50%;
-  transform: translateX(-50%);
-  min-height: 72vh;
-
-  background-image: url('/banner-desktop.png?v=7');
-  background-size: cover;
-  background-position: center 35%;
-  background-repeat: no-repeat;
-
-  /* small pop without darkening your logo/text in the image */
-  filter: brightness(1.08) contrast(1.04);
+.results-hero {
+  position: relative;
+  min-height: 40vh;
+  background: #000 url('/results-bg.jpg') center/cover no-repeat;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
 }
 
-/* Nuke any old flex rules that might be lingering */
-.hero, .hero.hero-img { display: block !important; align-items: initial !important; justify-content: initial !important; }
-
-/* Absolutely position the search block so it's reliable on all devices */
-.hero-inner{
+.results-overlay {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);   /* center (desktop) */
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 0 16px;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.6));
+  z-index: 0;
 }
 
-/* ===== Search UI ===== */
-.searchbar{
+.results-header {
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 92vw);
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.results-search {
   display: flex;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
+  width: min(720px, 92vw);
 }
 
-.searchbar input{
-  min-width: 420px;
-  max-width: 60vw;
-  padding: 14px 16px;
-  border: 0;
-  border-radius: 8px;
+.results-search input {
+  flex: 1;
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  padding: 0 16px;
+  font-size: 16px;
   background: #fff;
   color: #111;
-  font-size: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,.15);
 }
 
-.searchbar button{
-  padding: 14px 18px;
-  border: 0;
-  border-radius: 8px;
-  background: #ff7f50;              /* coral for zip */
-  color: #fff;
+.results-search button {
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  padding: 0 18px;
   font-weight: 700;
-  font-size: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  background: #111;
+  color: #fff;
   cursor: pointer;
-  transition: background .15s ease;
-}
-.searchbar button:hover{ background:#e76e3c; }
-
-/* ===== Mobile (<=768px) ===== */
-@media (max-width: 768px){
-  .hero.hero-img{
-    background-image: url('/banner-mobile.png?v=7');
-    background-position: center center;
-    min-height: 90vh;                  /* taller banner on phones */
-    filter: brightness(1.12) contrast(1.05);
-  }
-
-  /* Put the search near the bottom, centered */
-  .hero-inner{
-    top: auto;                         /* stop vertical centering */
-    bottom: 12vh;                      /* ~2/3–3/4 down the banner */
-    transform: translateX(-50%);       /* center horizontally only */
-    padding: 0 12px;
-  }
-
-  .searchbar{ flex-direction: column; gap: 12px; }
-  .searchbar input{ min-width: 0; width: 86vw; }
-  .searchbar button{ width: max-content; }
 }
 
-/* Extra-small devices */
-@media (max-width: 360px){
-  .hero-inner{ bottom: 10vh; }
+.query-pill {
+  background: rgba(255,255,255,.9);
+  color: #111;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.results-wrap {
+  width: min(1100px, 92vw);
+  margin: 28px auto 56px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 18px;
+}
+
+.recipe-card {
+  grid-column: span 6;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+
+.recipe-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.recipe-blurb, .recipe-missing {
+  margin: 0;
+  color: #cfcfcf;
+}
+
+.recipe-badge {
+  justify-self: end;
+  font-size: 12px;
+  color: #eee;
+  background: rgba(255,255,255,.12);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.recipe-card .ghost {
+  justify-self: start;
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #ddd;
+  background: #1a1a1a;
+  border: 1px dashed #2a2a2a;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+/* Mobile tweaks */
+@media (max-width: 680px) {
+  .results-hero { min-height: 46vh; }
+  .results-search { width: min(560px, 92vw); }
+  .results-wrap { grid-template-columns: repeat(6, 1fr); }
+  .recipe-card { grid-column: span 6; }
+  .query-pill { font-size: 13px; }
 }
