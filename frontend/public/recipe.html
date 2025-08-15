@@ -3,41 +3,211 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Recipe — Leftover Magic</title>
+  <title>Recipe • Leftover Magic</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
-<body>
-  <header class="nav">
-    <a href="/" class="logo">Leftover <span>Magic</span></a>
+<body class="recipe-page">
+  <!-- Top bar -->
+  <header class="recipe-topbar">
+    <button class="back" id="backBtn" aria-label="Back to results">← Back</button>
+    <div class="spacer"></div>
+    <div class="top-actions">
+      <button id="printBtn" class="ghost sm">Print</button>
+      <button id="regenBtn" class="ghost sm">Regenerate</button>
+    </div>
   </header>
 
-  <main class="container narrow">
-    <article id="recipe"></article>
+  <!-- Hero / Title -->
+  <section class="recipe-hero">
+    <div class="recipe-hero-overlay"></div>
+    <div class="recipe-hero-inner">
+      <h1 id="rTitle">Recipe</h1>
+      <div class="chips" id="metaChips"></div>
+      <p class="sub" id="subBlurb"></p>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <main class="recipe-wrap" id="recipeWrap">
+    <aside class="ingredients">
+      <h2>Ingredients</h2>
+      <div class="ing-group">
+        <h3>You’ve got</h3>
+        <ul id="haveList" class="ing-checklist"></ul>
+      </div>
+      <div class="ing-group">
+        <h3>To buy</h3>
+        <ul id="needList" class="ing-checklist need"></ul>
+      </div>
+
+      <div class="panel">
+        <h3>Nutrition (est.)</h3>
+        <div class="nutrition" id="nutrition"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Tags</h3>
+        <div class="chips" id="tags"></div>
+      </div>
+    </aside>
+
+    <section class="method">
+      <h2>Method</h2>
+      <ol id="steps" class="steps"></ol>
+
+      <div class="panel tip" id="chefTips"></div>
+
+      <div class="cta-row">
+        <button id="startBtn" class="primary">Start cooking</button>
+        <button id="copyBtn" class="ghost">Copy ingredients</button>
+      </div>
+    </section>
   </main>
 
   <footer class="foot">© 2025 Leftover Magic</footer>
 
   <script>
-    const rid = new URLSearchParams(location.search).get('id');
-    fetch('/api/recipe/' + encodeURIComponent(rid))
-      .then(r=>r.json()).then(data => {
-        if (data.error) { document.getElementById('recipe').textContent = 'Recipe not found.'; return; }
-        const el = document.getElementById('recipe');
-        el.innerHTML = `
-          <h1>${data.title}</h1>
-          <section class="card">
-            <h3>Ingredients</h3>
-            <ul>${(data.ingredients||[]).map(i => '<li>'+i+'</li>').join('')}</ul>
-          </section>
-          <section class="card">
-            <h3>Steps</h3>
-            <ol>${(data.steps||[]).map(s => '<li>'+s+'</li>').join('')}</ol>
-          </section>
-          <section class="card">
-            <h3>Nutrition (est.)</h3>
-            <p>${data.nutrition.kcal} kcal • Protein ${data.nutrition.protein_g}g • Carbs ${data.nutrition.carbs_g}g • Fat ${data.nutrition.fat_g}g</p>
-          </section>`;
-      });
+    (function () {
+      const qs = new URLSearchParams(location.search);
+      const id = qs.get('id') || 'pasta-salad';
+      const ings = (qs.get('ings') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+      // Back to results with the same query
+      document.getElementById('backBtn').onclick = () => {
+        location.href = '/results.html?ings=' + encodeURIComponent(ings.join(', '));
+      };
+
+      // Try API, otherwise fall back
+      fetch('/api/recipe?id=' + encodeURIComponent(id) + '&ings=' + encodeURIComponent(ings.join(',')))
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(render)
+        .catch(() => render(dummyRecipe(id)));
+
+      function render(r) {
+        // Title + blurb
+        document.getElementById('rTitle').textContent = r.title;
+        document.getElementById('subBlurb').textContent = r.blurb || 'A fast, flexible leftover makeover.';
+
+        // Meta chips
+        const meta = document.getElementById('metaChips');
+        meta.innerHTML = '';
+        [['⏱', r.time || '25 min'], ['🍽', r.serves ? `Serves ${r.serves}` : 'Serves 2']].forEach(([i, t]) => {
+          const s = document.createElement('span'); s.className = 'chip'; s.textContent = `${i} ${t}`; meta.appendChild(s);
+        });
+
+        // Ingredients → have vs need
+        const haveList = document.getElementById('haveList');
+        const needList = document.getElementById('needList');
+        haveList.innerHTML = ''; needList.innerHTML = '';
+        (r.ingredients || []).forEach(item => {
+          const key = item.toLowerCase().replace(/[^a-z]/g,'');
+          const match = ings.some(x => key.includes(x.replace(/[^a-z]/g,'')));
+          const li = document.createElement('li');
+          li.innerHTML = `<label><input type="checkbox" ${match ? 'checked' : ''} /> <span>${item}</span></label>`;
+          (match ? haveList : needList).appendChild(li);
+        });
+
+        // Steps
+        const steps = document.getElementById('steps');
+        steps.innerHTML = '';
+        (r.steps || []).forEach(s => {
+          const li = document.createElement('li'); li.textContent = s; steps.appendChild(li);
+        });
+
+        // Nutrition
+        const n = r.nutrition || { Calories:'~520', Protein:'~22g', Carbs:'~60g', Fat:'~20g' };
+        const nDiv = document.getElementById('nutrition');
+        nDiv.innerHTML = Object.entries(n).map(([k,v]) => `<div><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+        // Tags
+        const tags = document.getElementById('tags');
+        tags.innerHTML = (r.tags || ['Leftovers','Weeknight','Budget']).map(t => `<span class="chip">${t}</span>`).join('');
+
+        // Tips
+        const tip = document.getElementById('chefTips');
+        tip.innerHTML = `<h3>Tips</h3><p>${r.tips || 'Swap in any herbs you have. Save pasta water for extra silkiness.'}</p>`;
+
+        // Hero background (use your collage bg for consistency)
+        document.querySelector('.recipe-hero').style.backgroundImage = "url('/results-bg.jpg')";
+      }
+
+      // Actions
+      document.getElementById('copyBtn').onclick = () => {
+        const all = Array.from(document.querySelectorAll('#needList span')).map(s => '• ' + s.textContent).join('\n');
+        navigator.clipboard.writeText(all || 'No missing ingredients!');
+        alert('Missing ingredients copied.');
+      };
+
+      document.getElementById('startBtn').onclick = () => {
+        // Simple print-friendly “cook mode”
+        window.print();
+      };
+
+      document.getElementById('printBtn').onclick = () => window.print();
+      document.getElementById('regenBtn').onclick = () => {
+        // Force a “different” suggestion by appending a seed param
+        const seed = Math.random().toString(36).slice(2,7);
+        location.href = `/recipe.html?id=${encodeURIComponent(id)}&ings=${encodeURIComponent(ings.join(','))}&seed=${seed}`;
+      };
+
+      // Dummy content while API isn’t live
+      function dummyRecipe(key) {
+        const lib = {
+          'pasta-salad': {
+            title: 'Pesto Pasta Salad',
+            blurb: 'Bright, herby, ready in a flash.',
+            time: '20 min', serves: 2,
+            ingredients: ['Cooked pasta', 'Cherry tomatoes', 'Pesto', 'Olive oil', 'Parmesan', 'Lemon', 'Mixed greens'],
+            steps: [
+              'Boil pasta if not already cooked; drain.',
+              'Toss warm pasta with pesto and a splash of olive oil.',
+              'Add halved cherry tomatoes and a squeeze of lemon.',
+              'Top with shaved parmesan and fold in greens just before serving.'
+            ],
+            nutrition: { Calories:'~540', Protein:'~18g', Carbs:'~68g', Fat:'~22g' },
+            tags: ['Vegetarian','15–20 min','Pantry']
+          },
+          'chicken-pesto': {
+            title: 'Chicken Pesto Skillet',
+            blurb: 'Juicy chicken, herby pan sauce.',
+            time: '30 min', serves: 2,
+            ingredients: ['Chicken thighs', 'Pesto', 'Garlic', 'Cherry tomatoes', 'Parmesan', 'Butter', 'Salt & pepper'],
+            steps: [
+              'Season chicken; sear 4–5 min/side.',
+              'Add butter and garlic; spoon in pesto with a splash of water.',
+              'Simmer to coat; toss in tomatoes till just burst.',
+              'Finish with parmesan.'
+            ],
+            tags: ['One-pan','High protein']
+          },
+          'veg-roast-bowl': {
+            title: 'Roast Veg Grain Bowl',
+            blurb: 'Crispy edges + creamy tahini.',
+            time: '35 min', serves: 2,
+            ingredients: ['Mixed vegetables', 'Olive oil', 'Salt', 'Pepper', 'Cooked grains', 'Tahini', 'Lemon'],
+            steps: [
+              'Roast chopped veg at 220°C with oil, salt, pepper (20–25 min).',
+              'Whisk tahini with lemon and warm water to drizzle.',
+              'Serve over grains; drizzle sauce.'
+            ],
+            tags: ['Vegan','Sheet-pan']
+          },
+          'bbq-flatbread': {
+            title: 'BBQ Chicken Flatbread',
+            blurb: 'Crispy, saucy, shareable.',
+            time: '15 min', serves: 2,
+            ingredients: ['Flatbread', 'Cooked chicken', 'BBQ sauce', 'Mozzarella', 'Red onion', 'Coriander'],
+            steps: [
+              'Spread BBQ sauce on flatbread.',
+              'Top with chicken, onion, mozzarella.',
+              'Bake 220°C for 8–10 min; finish with coriander.'
+            ],
+            tags: ['15 min','Kid friendly']
+          }
+        };
+        return lib[key] || lib['pasta-salad'];
+      }
+    })();
   </script>
 </body>
 </html>
